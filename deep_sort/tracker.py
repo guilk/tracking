@@ -37,7 +37,7 @@ class Tracker:
 
     """
 
-    def __init__(self, metric, max_iou_distance=0.7, max_age=30, n_init=3):
+    def __init__(self, metric, max_iou_distance=0.5, max_age=60, n_init=15):
         self.metric = metric
         self.max_iou_distance = max_iou_distance
         self.max_age = max_age
@@ -54,7 +54,6 @@ class Tracker:
         """
         for track in self.tracks:
             track.predict(self.kf)
-
     def update(self, detections):
         """Perform measurement update and track management.
 
@@ -95,6 +94,7 @@ class Tracker:
         def gated_metric(tracks, dets, track_indices, detection_indices):
             features = np.array([dets[i].feature for i in detection_indices])
             targets = np.array([tracks[i].track_id for i in track_indices])
+
             cost_matrix = self.metric.distance(features, targets)
             cost_matrix = linear_assignment.gate_cost_matrix(
                 self.kf, cost_matrix, tracks, dets, track_indices,

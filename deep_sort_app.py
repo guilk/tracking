@@ -40,18 +40,19 @@ def gather_sequence_info(sequence_dir, detection_file):
         * max_frame_idx: Index of the last frame.
 
     """
-    image_dir = os.path.join(sequence_dir, "img1")
+    # image_dir = os.path.join(sequence_dir, "img1")
+    image_dir = sequence_dir
     image_filenames = {
         int(os.path.splitext(f)[0]): os.path.join(image_dir, f)
         for f in os.listdir(image_dir)}
-    groundtruth_file = os.path.join(sequence_dir, "gt/gt.txt")
+    # groundtruth_file = os.path.join(sequence_dir, "gt/gt.txt")
 
     detections = None
     if detection_file is not None:
         detections = np.load(detection_file)
     groundtruth = None
-    if os.path.exists(groundtruth_file):
-        groundtruth = np.loadtxt(groundtruth_file, delimiter=',')
+    # if os.path.exists(groundtruth_file):
+    #     groundtruth = np.loadtxt(groundtruth_file, delimiter=',')
 
     if len(image_filenames) > 0:
         image = cv2.imread(next(iter(image_filenames.values())),
@@ -78,7 +79,7 @@ def gather_sequence_info(sequence_dir, detection_file):
     else:
         update_ms = None
 
-    feature_dim = detections.shape[1] - 10 if detections is not None else 0
+    feature_dim = detections.shape[1] - 6 if detections is not None else 0
     seq_info = {
         "sequence_name": os.path.basename(sequence_dir),
         "image_filenames": image_filenames,
@@ -119,7 +120,8 @@ def create_detections(detection_mat, frame_idx, min_height=0):
 
     detection_list = []
     for row in detection_mat[mask]:
-        bbox, confidence, feature = row[2:6], row[6], row[10:]
+        # bbox, confidence, feature = row[2:6], row[6], row[10:]
+        bbox, confidence, feature = row[1:5], row[5], row[6:]
         if bbox[3] < min_height:
             continue
         detection_list.append(Detection(bbox, confidence, feature))
@@ -177,7 +179,6 @@ def run(sequence_dir, detection_file, output_file, min_confidence,
         indices = preprocessing.non_max_suppression(
             boxes, nms_max_overlap, scores)
         detections = [detections[i] for i in indices]
-
         # Update tracker.
         tracker.predict()
         tracker.update(detections)
@@ -187,8 +188,11 @@ def run(sequence_dir, detection_file, output_file, min_confidence,
             image = cv2.imread(
                 seq_info["image_filenames"][frame_idx], cv2.IMREAD_COLOR)
             vis.set_image(image.copy())
-            vis.draw_detections(detections)
-            vis.draw_trackers(tracker.tracks)
+            # vis.draw_detections(detections)
+            image = vis.draw_trackers(tracker.tracks)
+            cv2.imwrite('./VIRAT_S_040103_00_000000_000120/results/{}.jpg'.format(str(frame_idx).zfill(6)), image)
+            # cv2.imshow('image', image)
+            # cv2.waitKey(1)
 
         # Store results.
         for track in tracker.tracks:
@@ -239,7 +243,7 @@ def parse_args():
         "detection overlap.", default=1.0, type=float)
     parser.add_argument(
         "--max_cosine_distance", help="Gating threshold for cosine distance "
-        "metric (object appearance).", type=float, default=0.2)
+        "metric (object appearance).", type=float, default=0.4)
     parser.add_argument(
         "--nn_budget", help="Maximum size of the appearance descriptors "
         "gallery. If None, no budget is enforced.", type=int, default=None)

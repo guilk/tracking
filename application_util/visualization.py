@@ -129,6 +129,7 @@ class Visualization(object):
             self.viewer.color = create_unique_color_uchar(track.track_id)
             self.viewer.rectangle(
                 *track.to_tlwh().astype(np.int), label=str(track.track_id))
+        return self.viewer.image
             # self.viewer.gaussian(track.mean[:2], track.covariance[:2, :2],
             #                      label="%d" % track.track_id)
 #

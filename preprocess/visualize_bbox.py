@@ -89,14 +89,15 @@ def create_detection_file(frame_root, bbox_info_root, bbox_feat_root):
 
 
 if __name__ == '__main__':
-    frame_root = '../VIRAT_S_040103_00_000000_000120/frames'
-    bbox_info_root = '../VIRAT_S_040103_00_000000_000120/bbox_infos'
-    bbox_feat_root = '../VIRAT_S_040103_00_000000_000120/bbox_feats'
+    video_folder = 'VIRAT_S_040003_04_000758_001118'
+    frame_root = '../../{}/frames'.format(video_folder)
+    bbox_info_root = '../../bbox_infos/{}.mp4/'.format(video_folder)
+    bbox_feat_root = '../../bbox_feats/{}.mp4/'.format(video_folder)
 
     video_bbox_infos = create_detection_file(frame_root, bbox_info_root, bbox_feat_root)
 
     video_bbox_data = np.asarray(video_bbox_infos)
-    np.save('../VIRAT_S_040103_00_000000_000120/VIRAT_S_040103_00_000000_000120.npy', video_bbox_data)
+    np.save('../../{}/{}.npy'.format(video_folder, video_folder), video_bbox_data)
 
     print video_bbox_data.shape
 

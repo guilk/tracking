@@ -7,8 +7,8 @@
 #    --display=True
 
 python deep_sort_app.py \
-    --sequence_dir=./VIRAT_S_040103_00_000000_000120/frames \
-    --detection_file=./VIRAT_S_040103_00_000000_000120/VIRAT_S_040103_00_000000_000120.npy \
+    --sequence_dir=../VIRAT_S_040003_04_000758_001118/frames \
+    --detection_file=../VIRAT_S_040003_04_000758_001118/VIRAT_S_040003_04_000758_001118.npy \
     --min_confidence=0.85 \
     --nn_budget=5 \
     --display=True

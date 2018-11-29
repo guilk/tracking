@@ -190,7 +190,7 @@ def run(sequence_dir, detection_file, output_file, min_confidence,
             vis.set_image(image.copy())
             # vis.draw_detections(detections)
             image = vis.draw_trackers(tracker.tracks)
-            cv2.imwrite('./VIRAT_S_040103_00_000000_000120/results/{}.jpg'.format(str(frame_idx).zfill(6)), image)
+            cv2.imwrite('../VIRAT_S_040003_04_000758_001118/results/{}.jpg'.format(str(frame_idx).zfill(6)), image)
             # cv2.imshow('image', image)
             # cv2.waitKey(1)
 

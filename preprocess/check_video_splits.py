@@ -9,7 +9,11 @@ if __name__ == '__main__':
     for file_name in files:
         if file_name.startswith('VIRAT_S') and file_name.endswith('-index.json'):
             files_set.add(file_name.replace('_file-index.json', '.mp4'))
-    print len(files_set)
+
+    with open('validation_split.txt', 'wb') as fw:
+        for file_name in files_set:
+            fw.write(file_name+'\n')
+    # print len(files_set)
     # for video_name in files_set:
     #     video_path = os.path.join(video_root, video_name)
     #     if not os.path.exists(video_path):

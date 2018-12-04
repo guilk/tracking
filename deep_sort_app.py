@@ -13,7 +13,7 @@ from deep_sort import nn_matching
 from deep_sort.detection import Detection
 from deep_sort.tracker import Tracker
 
-
+import time
 def gather_sequence_info(sequence_dir, detection_file):
     """Gather sequence information, such as image filenames, detections,
     groundtruth (if available).
@@ -190,7 +190,7 @@ def run(sequence_dir, detection_file, output_file, min_confidence,
             vis.set_image(image.copy())
             # vis.draw_detections(detections)
             image = vis.draw_trackers(tracker.tracks)
-            cv2.imwrite('../VIRAT_S_040003_04_000758_001118/results/{}.jpg'.format(str(frame_idx).zfill(6)), image)
+            # cv2.imwrite('../VIRAT_S_040103_00_000000_000120/results/{}.jpg'.format(str(frame_idx).zfill(6)), image)
             # cv2.imshow('image', image)
             # cv2.waitKey(1)
 
@@ -255,7 +255,12 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
+    start_time = time.time()
     run(
         args.sequence_dir, args.detection_file, args.output_file,
         args.min_confidence, args.nms_max_overlap, args.min_detection_height,
         args.max_cosine_distance, args.nn_budget, args.display)
+    end_time = time.time()
+    duration = end_time - start_time
+    time_per_frame = duration/3597.0
+    print('Costing time per frame: {}'.format(time_per_frame))

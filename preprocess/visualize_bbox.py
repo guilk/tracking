@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import random
 from sklearn import preprocessing
+import argparse
 
 def load_json(file):
     with open(file) as json_file:
@@ -86,21 +87,32 @@ def create_detection_file(frame_root, bbox_info_root, bbox_feat_root):
 
     return video_bbox_infos
 
-
+def parse_args():
+    parser = argparse.ArgumentParser(description="Create input files to tracking")
+    parser.add_argument(
+        "--video_name", help="the input video name", default=None,
+        required=True)
+    return parser.parse_args()
 
 if __name__ == '__main__':
-    video_folder = 'VIRAT_S_040003_04_000758_001118'
-    frame_root = '../../{}/frames'.format(video_folder)
-    bbox_info_root = '../../bbox_infos/{}.mp4/'.format(video_folder)
-    bbox_feat_root = '../../bbox_feats/{}.mp4/'.format(video_folder)
+    args = parse_args()
+    # video_folder = 'VIRAT_S_040003_04_000758_001118'
+    video_folder = args.video_name
+    dst_root = os.path.join('/tmp/', video_folder)
+    if not os.path.exists(dst_root):
+        os.mkdir(dst_root)
+
+    frame_root = '/tmp/{}/frames'.format(video_folder)
+    bbox_info_root = '/tmp/bbox_infos/{}/'.format(video_folder)
+    bbox_feat_root = '/tmp/bbox_feats/{}/'.format(video_folder)
 
     video_bbox_infos = create_detection_file(frame_root, bbox_info_root, bbox_feat_root)
 
     video_bbox_data = np.asarray(video_bbox_infos)
-    np.save('../../{}/{}.npy'.format(video_folder, video_folder), video_bbox_data)
-
-    print video_bbox_data.shape
-
+    np.save('/tmp/{}/{}.npy'.format(video_folder, video_folder.split('.')[0]), video_bbox_data)
+    #
+    # print video_bbox_data.shape
+    #
     # frame_index = 1000
     #
     # frame_path = os.path.join(frame_root, '{}.jpg'.format(str(frame_index).zfill(6)))

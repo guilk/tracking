@@ -74,7 +74,7 @@ def create_detection_file(frame_root, bbox_info_root, bbox_feat_root):
     video_bbox_infos = []
     for frame in frames:
         frame_index = int(frame.split('.')[0]) - 1
-        print 'Process {}th frame'.format(frame_index)
+        # print 'Process {}th frame'.format(frame_index)
         bbox_info_path = os.path.join(bbox_info_root, '{}.json'.format(frame_index))
         bbox_feat_path = os.path.join(bbox_feat_root, '{}.npy'.format(frame_index))
 

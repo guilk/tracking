@@ -10,6 +10,7 @@ if __name__ == '__main__':
 
     # video_list = ['VIRAT_S_000204_04_000738_000977.mp4']
     for index, video_name in enumerate(video_list):
+        print 'Process {}th of {} videos'.format(index, len(video_list))
         with open('/tmp/video_list.txt', 'wb') as fw:
             fw.write(video_name)
         cmd = 'python /app/obj_detect.py --video_dir /tmp/videos --video_lst_file /tmp/video_list.txt ' \

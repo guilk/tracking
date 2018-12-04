@@ -8,14 +8,14 @@ if __name__ == '__main__':
         for line in lines:
             video_list.append(line.rstrip('\r\n'))
 
-    video_list = ['VIRAT_S_000204_04_000738_000977.mp4']
+    # video_list = ['VIRAT_S_000204_04_000738_000977.mp4']
     for index, video_name in enumerate(video_list):
         with open('/tmp/video_list.txt', 'wb') as fw:
             fw.write(video_name)
-        # cmd = 'python /app/obj_detect.py --video_dir /tmp/videos --video_lst_file /tmp/video_list.txt ' \
-        #       '--out_dir /tmp/bbox_infos --get_box_feat --box_feat_path /tmp/bbox_feats --frame_gap 1 ' \
-        #       '--threshold_conf 0.0001'
-        # os.system(cmd)
+        cmd = 'python /app/obj_detect.py --video_dir /tmp/videos --video_lst_file /tmp/video_list.txt ' \
+              '--out_dir /tmp/bbox_infos --get_box_feat --box_feat_path /tmp/bbox_feats --frame_gap 1 ' \
+              '--threshold_conf 0.0001'
+        os.system(cmd)
 
         os.makedirs('/tmp/{}/frames'.format(video_name))
 
@@ -33,14 +33,14 @@ if __name__ == '__main__':
               '--display=False'.format(video_name, video_name, video_name.split('.')[0], video_name.split('.')[0])
         os.system(cmd)
 
-        # cmd = 'rm -rf /tmp/bbox_feats/{}'.format(video_name)
-        # os.system(cmd)
-        # cmd = 'rm -rf /tmp/bbox_infos/{}'.format(video_name)
-        # os.system(cmd)
-        # cmd = 'rm -rf /tmp/{}'.format(video_name)
-        # os.system(cmd)
-        # cmd = 'rm -rf /tmp/video_list.txt'
-        # os.system(cmd)
+        cmd = 'rm -rf /tmp/bbox_feats/{}'.format(video_name)
+        os.system(cmd)
+        cmd = 'rm -rf /tmp/bbox_infos/{}'.format(video_name)
+        os.system(cmd)
+        cmd = 'rm -rf /tmp/{}'.format(video_name)
+        os.system(cmd)
+        cmd = 'rm -rf /tmp/video_list.txt'
+        os.system(cmd)
 
 
 

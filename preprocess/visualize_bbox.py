@@ -50,15 +50,16 @@ def visualize_gt(bbox_infos, frame):
 def filter_bbox(frame_index, bbox_infos, bbox_feats):
     '''
     :param bbox_infos: [dict] : [u'segmentation', u'category_id', u'score', u'cat_name', u'bbox']
-    :param bbox_feats: corresponding bbox feature
+    :param bbox_feats: corresponding bbox feature Person, Vehicle, Bike
     :return:
     '''
     frame_bbox_infos = []
     for index, bbox_info in enumerate(bbox_infos):
-        if bbox_info['cat_name'] not in ['Person', 'Vehicle', 'Bike'] or bbox_info['score'] < 0.3:
+        if bbox_info['cat_name'] not in ['Person'] or bbox_info['score'] < 0.3:
             continue
         x,y,w,h = int(bbox_info['bbox'][0]), int(bbox_info['bbox'][1]), \
                   int(bbox_info['bbox'][2]), int(bbox_info['bbox'][3])
+        # avg_feat = bbox_feats[index]
         avg_feat = np.mean(np.mean(bbox_feats[index], axis=1), axis=1)
         norm_feat = avg_feat / np.linalg.norm(avg_feat)
         list_feat = norm_feat.tolist()

@@ -17,6 +17,7 @@ from deep_sort import nn_matching
 from deep_sort.detection import Detection
 from deep_sort.tracker import Tracker
 from application_util import preprocessing
+from deep_sort.utils import create_obj_infos
 
 from utils import Dataset, Summary, get_op_tensor_name
 
@@ -74,7 +75,7 @@ def get_args():
     # ----------- tracking params
     parser.add_argument("--get_tracking", action="store_true",
                         help="this will generate tracking results for each frame")
-    parser.add_argument("--tracking_dir", default=None,
+    parser.add_argument("--tracking_dir", default="/tmp",
                         help="output will be out_dir/$videoname.txt, start from 0 index")
     parser.add_argument("--tracking_objs", default="Person,Vehicle",
                         help="Objects to be tracked, default are Person and Vehicle")
@@ -323,27 +324,29 @@ if __name__ == "__main__":
                     sess_input = [model.final_boxes, model.final_labels, model.final_probs, model.fpn_box_feat]
                     final_boxes, final_labels, final_probs, box_feats = sess.run(sess_input, feed_dict=feed_dict)
                     assert len(box_feats) == len(final_boxes)
-                    tracking_boxes = final_boxes / scale
-
-                    obj_infos = []
-                    for j, (box, prob, label) in enumerate(zip(tracking_boxes, final_probs, final_labels)):
-                        cat_name = targetid2class[label]
-                        confidence_socre = float(round(prob,7))
-                        if cat_name not in tracking_objs or confidence_socre < args.min_confidence:
-                            continue
-                        box[2] -= box[0]
-                        box[3] -= box[1]
-                        avg_feat = np.mean(np.mean(box_feats[j], axis=1), axis=1)
-                        norm_feat = avg_feat/np.linalg.norm(avg_feat)
-                        list_feat = norm_feat.tolist()
-                        bbox_data = [cur_frame, box[0], box[1], box[2], box[3], confidence_socre] + list_feat
-                        obj_infos.append(bbox_data)
-                    detections = []
-                    for row in obj_infos:
-                        bbox, confidence, feature = row[1:5], row[5], row[6:]
-                        if bbox[3] < args.min_detection_height:
-                            continue
-                        detections.append(Detection(bbox, confidence, feature))
+                    # tracking_boxes = final_boxes / scale
+                    #
+                    # obj_infos = []
+                    # for j, (box, prob, label) in enumerate(zip(tracking_boxes, final_probs, final_labels)):
+                    #     cat_name = targetid2class[label]
+                    #     confidence_socre = float(round(prob,7))
+                    #     if cat_name not in tracking_objs or confidence_socre < args.min_confidence:
+                    #         continue
+                    #     box[2] -= box[0]
+                    #     box[3] -= box[1]
+                    #     avg_feat = np.mean(np.mean(box_feats[j], axis=1), axis=1)
+                    #     norm_feat = avg_feat/np.linalg.norm(avg_feat)
+                    #     list_feat = norm_feat.tolist()
+                    #     bbox_data = [cur_frame, box[0], box[1], box[2], box[3], confidence_socre] + list_feat
+                    #     obj_infos.append(bbox_data)
+                    # detections = []
+                    # for row in obj_infos:
+                    #     bbox, confidence, feature = row[1:5], row[5], row[6:]
+                    #     if bbox[3] < args.min_detection_height:
+                    #         continue
+                    #     detections.append(Detection(bbox, confidence, feature))
+                    detections = create_obj_infos(cur_frame, final_boxes, final_probs, final_labels, box_feats,
+                                                  targetid2class,tracking_objs, args.min_confidence, args.min_detection_height, scale)
                     # Run non-maxima suppression.
                     boxes = np.array([d.tlwh for d in detections])
                     scores = np.array([d.confidence for d in detections])
@@ -364,7 +367,6 @@ if __name__ == "__main__":
                             cur_frame, track.track_id, bbox[0], bbox[1], bbox[2], bbox[3]])
                 else:
                     sess_input = [model.final_boxes, model.final_labels, model.final_probs]
-
                     final_boxes, final_labels, final_probs = sess.run(sess_input, feed_dict=feed_dict)
                 # print "sess run done"
                 # scale back the box to original image size
@@ -415,7 +417,7 @@ if __name__ == "__main__":
 
                 cur_frame += 1
             if args.get_tracking:
-                output_file = os.path.join(args.tracking_dir, '{}.txt'.format(videofile.split('.')[0]))
+                output_file = os.path.join(args.tracking_dir, '{}.txt'.format(videoname.split('.')[0]))
                 with open(output_file, 'wb') as fw:
                     for row in tracking_results:
                         line = '%d,%d,%.2f,%.2f,%.2f,%.2f,1,-1,-1,-1' % (row[0], row[1], row[2], row[3], row[4], row[5])

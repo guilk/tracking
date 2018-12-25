@@ -417,6 +417,8 @@ if __name__ == "__main__":
 
                 cur_frame += 1
             if args.get_tracking:
+                if not os.path.exists(args.tracking_dir):
+                    os.makedirs(args.tracking_dir)
                 output_file = os.path.join(args.tracking_dir, '{}.txt'.format(videoname.split('.')[0]))
                 with open(output_file, 'wb') as fw:
                     for row in tracking_results:

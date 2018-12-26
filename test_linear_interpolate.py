@@ -1,9 +1,9 @@
 import numpy as np
+import os
 from bisect import bisect
 
-
+# 1
 def linear_inter_bbox(tracking_data, frame_gap):
-    print tracking_data.shape
     obj_indices = tracking_data[:,1].astype(np.int)
     obj_ids = set(obj_indices.tolist())
     tracking_data_list = tracking_data.tolist()
@@ -39,13 +39,57 @@ def linear_inter_bbox(tracking_data, frame_gap):
     return tracking_data
     # print tracking_data.shape
 
+# 3
+def adjust_frame_inds(tracking_data):
+    frame_inds = np.zeros_like(tracking_data)
+    frame_inds[:,0] = 1
+    tracking_data += frame_inds
+    return tracking_data
+
+# 3
+def filter_short_objs(tracking_data):
+    obj_indices = tracking_data[:,1].astype(np.int)
+    obj_ids = set(obj_indices.tolist())
+    filter_objs = set()
+
+    for obj_index in obj_ids:
+        mask = obj_indices == obj_index
+        num_frames = np.sum(mask)
+        if num_frames < 2:
+            filter_objs.add(obj_index)
+
+    tracking_data_list = tracking_data.tolist()
+    tracking_data_list = [tracklet for tracklet in tracking_data_list if int(tracklet[1]) not in filter_objs]
+    tracking_data_list = sorted(tracking_data_list, key=lambda x: (x[0], x[1]))
+    tracking_data = np.asarray(tracking_data_list)
+    return tracking_data
+
 if __name__ == '__main__':
+
+    # src_root = './5_detection_tracking_results'
+    # dst_root = './post_detection_tracking_results'
+    # tracking_files = os.listdir(src_root)
+    # for tracking_file in tracking_files:
+    #     if tracking_file.startswith('VIRAT_S') and tracking_file.endswith('.txt'):
+    #         print 'Process {0}th file'.format(tracking_file)
+    #         data_file = os.path.join(src_root, tracking_file)
+    #         tracking_data = np.loadtxt(data_file, delimiter=',')
+    #         frame_gap = 1
+    #         tracking_data = linear_inter_bbox(tracking_data, frame_gap)
+    #         tracking_data = adjust_frame_inds(tracking_data)
+    #         np.savetxt(os.path.join(dst_root, tracking_file), tracking_data,
+    #                    delimiter=',', fmt='%i,%i,%.2f,%.2f,%.2f,%.2f,%i,%i,%i,%i')
+
+
+
+
     data_file = './VIRAT_S_000200_00_000100_000171.txt'
     tracking_data = np.loadtxt(data_file, delimiter=',')
     frame_gap = 1
+    filter_short_objs(tracking_data)
 
-    tracking_data = linear_inter_bbox(tracking_data, frame_gap)
-    np.savetxt('./new_text.txt', tracking_data, delimiter=',', fmt='%i,%i,%.2f,%.2f,%.2f,%.2f,%i,%i,%i,%i')
+    # tracking_data = linear_inter_bbox(tracking_data, frame_gap)
+    # np.savetxt('./new_text.txt', tracking_data, delimiter=',', fmt='%i,%i,%.2f,%.2f,%.2f,%.2f,%i,%i,%i,%i')
     # list1 = [1, 2, 3, 4, 5, 6]
     # list2 = [4, 5, 6, 7, 8]
     # values = set(list1).difference(list2)
